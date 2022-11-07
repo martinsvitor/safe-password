@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   FormControl,
   FormControlLabel,
   IconButton,
@@ -10,8 +11,10 @@ import {
   TextField,
 } from '@mui/material';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+
+import { Password } from '../services/Password-logic';
 
 const PasswordGenerator = () => {
   const [passwordConfig, setPasswordConfig] = useState({
@@ -23,6 +26,7 @@ const PasswordGenerator = () => {
     upperCase: false,
     showPassword: true,
   });
+  const [activateButton, setActivateButton] = useState(true);
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPasswordConfig({
@@ -39,7 +43,18 @@ const PasswordGenerator = () => {
       ).checked,
     });
   };
-
+  useEffect(() => {
+    if (
+      passwordConfig.symbol ||
+      passwordConfig.number ||
+      passwordConfig.lowerCase ||
+      passwordConfig.upperCase
+    ) {
+      setActivateButton(false);
+    } else {
+      setActivateButton(true);
+    }
+  }, [passwordConfig]);
   const handleShowPassword = () => {
     setPasswordConfig({
       ...passwordConfig,
@@ -47,9 +62,17 @@ const PasswordGenerator = () => {
     });
   };
 
+  const handleSubmit = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    Password.getPasswordConfig(passwordConfig);
+    const newPassword = Password.createPassword();
+    setPasswordConfig({ ...passwordConfig, generatedPassword: newPassword });
+  };
+
   return (
     <>
-      <pre>{JSON.stringify(passwordConfig)}</pre>
       <Box
         sx={{
           m: 10,
@@ -59,17 +82,18 @@ const PasswordGenerator = () => {
           backgroundColor: 'white',
           display: 'flex',
           justifyContent: 'flex-start',
-
+          border: '1px solid black',
+          borderRadius: 5,
           flexWrap: 'wrap',
         }}
       >
-        <div>
+        <form>
           <FormControl
             sx={{ m: 1, width: '25ch', backgroundColor: 'white' }}
             variant='outlined'
           >
             <InputLabel htmlFor='outlined-adornment-password'>
-              Generated Password
+              Random Password
             </InputLabel>
             <OutlinedInput
               id='outlined-adornment-password'
@@ -82,7 +106,6 @@ const PasswordGenerator = () => {
                   <IconButton
                     aria-label='toggle password visibility'
                     onClick={handleShowPassword}
-                    //   onMouseDown={handleMouseDownPassword}
                     edge='end'
                   >
                     {passwordConfig.showPassword ? (
@@ -99,10 +122,10 @@ const PasswordGenerator = () => {
           <FormControl>
             <TextField
               type='number'
-              defaultValue='20'
               name='passwordLength'
               value={passwordConfig.passwordLength}
               onChange={handleInput}
+              label='Password Length'
             />
           </FormControl>
           <Box
@@ -136,7 +159,16 @@ const PasswordGenerator = () => {
               onChange={handleCheckbox}
             />
           </Box>
-        </div>
+          <Button
+            type='submit'
+            onClick={handleSubmit}
+            sx={{ mt: 6 }}
+            disabled={activateButton}
+          >
+            {' '}
+            Generate Password{' '}
+          </Button>
+        </form>
       </Box>
     </>
   );
