@@ -15,64 +15,60 @@ import React, { useEffect, useState } from 'react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 import { Password } from '../services/Password-logic';
+import CheckboxInput from './CheckboxInput';
 
 const PasswordGenerator = () => {
-  const [passwordConfig, setPasswordConfig] = useState({
-    generatedPassword: '',
-    passwordLength: 20,
+  const [passwordLength, setPasswordLength] = useState(20);
+  const [newPassword, setNewPassword] = useState('');
+  const [checkboxInput, setCheckboxInput] = useState({
     symbol: false,
     number: false,
-    lowerCase: false,
-    upperCase: false,
-    showPassword: true,
+    lowercase: false,
+    uppercase: false,
   });
-  const [activateButton, setActivateButton] = useState(true);
+  const [showPassword, setShowPassword] = useState(true);
+  const [activeButton, setActiveButton] = useState(true);
 
-  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswordConfig({
-      ...passwordConfig,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleCheckbox = (event: React.SyntheticEvent) => {
-    setPasswordConfig({
-      ...passwordConfig,
+  const handleCheckboxInput = (event: React.SyntheticEvent) => {
+    setCheckboxInput({
+      ...checkboxInput,
       [(event.target as HTMLInputElement).name]: (
         event.target as HTMLInputElement
       ).checked,
     });
   };
-  useEffect(() => {
-    if (
-      passwordConfig.symbol ||
-      passwordConfig.number ||
-      passwordConfig.lowerCase ||
-      passwordConfig.upperCase
-    ) {
-      setActivateButton(false);
-    } else {
-      setActivateButton(true);
-    }
-  }, [passwordConfig]);
+
   const handleShowPassword = () => {
-    setPasswordConfig({
-      ...passwordConfig,
-      showPassword: !passwordConfig.showPassword,
-    });
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.preventDefault();
-    Password.getPasswordConfig(passwordConfig);
-    const newPassword = Password.createPassword();
-    setPasswordConfig({ ...passwordConfig, generatedPassword: newPassword });
+    Password.getPasswordConfig(checkboxInput, passwordLength);
+    setNewPassword(Password.createPassword());
   };
 
+  useEffect(() => {
+    if (
+      checkboxInput.symbol ||
+      checkboxInput.number ||
+      checkboxInput.lowercase ||
+      checkboxInput.uppercase
+    ) {
+      setActiveButton(false);
+    } else {
+      setActiveButton(true);
+    }
+  }, [checkboxInput]);
   return (
     <>
+      <pre>
+        {JSON.stringify(newPassword)} {JSON.stringify(passwordLength)}{' '}
+        {JSON.stringify(checkboxInput)} {JSON.stringify(showPassword)}{' '}
+        {JSON.stringify(activeButton)}
+      </pre>
       <Box
         sx={{
           m: 10,
@@ -97,10 +93,9 @@ const PasswordGenerator = () => {
             </InputLabel>
             <OutlinedInput
               id='outlined-adornment-password'
-              type={passwordConfig.showPassword ? 'text' : 'password'}
-              value={passwordConfig.generatedPassword}
+              type={showPassword ? 'text' : 'password'}
+              value={newPassword}
               name='generatedPassword'
-              onChange={handleInput}
               endAdornment={
                 <InputAdornment position='end'>
                   <IconButton
@@ -108,11 +103,7 @@ const PasswordGenerator = () => {
                     onClick={handleShowPassword}
                     edge='end'
                   >
-                    {passwordConfig.showPassword ? (
-                      <Visibility />
-                    ) : (
-                      <VisibilityOff />
-                    )}
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
               }
@@ -123,8 +114,10 @@ const PasswordGenerator = () => {
             <TextField
               type='number'
               name='passwordLength'
-              value={passwordConfig.passwordLength}
-              onChange={handleInput}
+              value={passwordLength}
+              onChange={(e) => {
+                setPasswordLength(Number(e.currentTarget.value));
+              }}
               label='Password Length'
             />
           </FormControl>
@@ -134,36 +127,16 @@ const PasswordGenerator = () => {
               flexDirection: 'column',
             }}
           >
-            <FormControlLabel
-              control={<Switch />}
-              label='Symbol'
-              name='symbol'
-              onChange={handleCheckbox}
-            />
-            <FormControlLabel
-              control={<Switch />}
-              label='Number'
-              name='number'
-              onChange={handleCheckbox}
-            />
-            <FormControlLabel
-              control={<Switch />}
-              label='Lowercase'
-              name='lowerCase'
-              onChange={handleCheckbox}
-            />
-            <FormControlLabel
-              control={<Switch />}
-              label='Uppercase'
-              name='upperCase'
-              onChange={handleCheckbox}
-            />
+            <CheckboxInput name='symbol' handleInput={handleCheckboxInput} />
+            <CheckboxInput name='number' handleInput={handleCheckboxInput} />
+            <CheckboxInput name='lowercase' handleInput={handleCheckboxInput} />
+            <CheckboxInput name='uppercase' handleInput={handleCheckboxInput} />
           </Box>
           <Button
             type='submit'
             onClick={handleSubmit}
             sx={{ mt: 6 }}
-            disabled={activateButton}
+            disabled={activeButton}
           >
             {' '}
             Generate Password{' '}
@@ -174,29 +147,4 @@ const PasswordGenerator = () => {
   );
 };
 
-{
-  /* <div>
-
-<Box
-component='form'
-sx={{
-m: 10,
-width: 300,
-height: 400,
-backgroundColor: 'primary.light',
-}}>
-    <TextField
-    id='outlined-read-only-input'
-    label='Read Only'
-    defaultValue='Hello World'
-    placeholder='Generated password...'
-    value={passwordConfig.generatedPassword}
-    InputProps={{
-        readOnly: true,
-    }}
-/>
-<div>Password Generator</div>
-</Box>
-</div> */
-}
 export default PasswordGenerator;
