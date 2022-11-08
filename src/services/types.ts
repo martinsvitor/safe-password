@@ -1,10 +1,13 @@
 export interface PasswordConfig {
-  generatedPassword?: string;
-  passwordLength: number;
   symbol: boolean;
   number: boolean;
-  upperCase: boolean;
-  lowerCase: boolean;
-  showPassword?: boolean;
-  conditions?: number;
+  uppercase: boolean;
+  lowercase: boolean;
+}
+
+type HandleInput = (event: React.SyntheticEvent) => void
+
+export interface InputProps {
+  name: string;
+  handleInput?: HandleInput;
 }

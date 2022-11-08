@@ -2,9 +2,14 @@ import { PasswordConfig } from './types';
 
 export class Password {
   static config: PasswordConfig;
+  static passwordLength: number;
 
-  static getPasswordConfig(config: PasswordConfig) {
+  static getPasswordConfig(
+    config: PasswordConfig,
+    passwordLength: number
+  ): void {
     this.config = { ...config };
+    this.passwordLength = passwordLength;
   }
 
   static getRandomSymbol(): string {
@@ -24,13 +29,13 @@ export class Password {
 
   static createPassword(): string {
     let newPassword: string = '';
-    while (newPassword.length < this.config.passwordLength) {
-      if (this.config.lowerCase) newPassword += this.getRandomLowercase();
+    while (newPassword.length < this.passwordLength) {
+      if (this.config.lowercase) newPassword += this.getRandomLowercase();
       if (this.config.symbol) newPassword += this.getRandomSymbol();
       if (this.config.number) newPassword += this.getRandomNumber();
-      if (this.config.upperCase) newPassword += this.getRandomUppercase();
+      if (this.config.uppercase) newPassword += this.getRandomUppercase();
     }
-    return newPassword.slice(0, this.config.passwordLength);
+    return newPassword.slice(0, this.passwordLength);
   }
 }
 
