@@ -2,18 +2,18 @@ import {
   Box,
   Button,
   FormControl,
-  FormControlLabel,
+  Grid,
   IconButton,
   InputAdornment,
   InputLabel,
   OutlinedInput,
-  Switch,
   TextField,
 } from '@mui/material';
 
-import React, { useEffect, useState } from 'react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import React, { useEffect, useState } from 'react';
 
+import Grid2 from '@mui/material/Unstable_Grid2';
 import { Password } from '../services/Password-logic';
 import CheckboxInput from './CheckboxInput';
 
@@ -27,7 +27,7 @@ const PasswordGenerator = () => {
     uppercase: false,
   });
   const [showPassword, setShowPassword] = useState(true);
-  const [activeButton, setActiveButton] = useState(true);
+  const [inactiveButton, setInactiveButton] = useState(true);
 
   const handleCheckboxInput = (event: React.SyntheticEvent) => {
     setCheckboxInput({
@@ -57,91 +57,112 @@ const PasswordGenerator = () => {
       checkboxInput.lowercase ||
       checkboxInput.uppercase
     ) {
-      setActiveButton(false);
+      setInactiveButton(false);
     } else {
-      setActiveButton(true);
+      setInactiveButton(true);
     }
   }, [checkboxInput]);
   return (
     <>
-      <pre>
-        {JSON.stringify(newPassword)} {JSON.stringify(passwordLength)}{' '}
-        {JSON.stringify(checkboxInput)} {JSON.stringify(showPassword)}{' '}
-        {JSON.stringify(activeButton)}
-      </pre>
       <Box
         sx={{
-          m: 10,
-          p: 5,
-          width: 300,
-          height: 400,
+          width: '100%',
+          height: '100%',
           backgroundColor: 'white',
           display: 'flex',
-          justifyContent: 'flex-start',
+          alignItems: 'center',
+          justifyContent: 'center',
           border: '1px solid black',
           borderRadius: 5,
-          flexWrap: 'wrap',
+          minWidth: '300px',
         }}
       >
-        <form>
-          <FormControl
-            sx={{ m: 1, width: '25ch', backgroundColor: 'white' }}
-            variant='outlined'
-          >
-            <InputLabel htmlFor='outlined-adornment-password'>
-              Random Password
-            </InputLabel>
-            <OutlinedInput
-              id='outlined-adornment-password'
-              type={showPassword ? 'text' : 'password'}
-              value={newPassword}
-              name='generatedPassword'
-              endAdornment={
-                <InputAdornment position='end'>
-                  <IconButton
-                    aria-label='toggle password visibility'
-                    onClick={handleShowPassword}
-                    edge='end'
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              }
-              label='Password'
-            />
-          </FormControl>
-          <FormControl>
-            <TextField
-              type='number'
-              name='passwordLength'
-              value={passwordLength}
-              onChange={(e) => {
-                setPasswordLength(Number(e.currentTarget.value));
+        <Grid2
+          container
+          spacing={4}
+          minHeight={160}
+          sx={{
+            m: 1.5,
+            p: 0.5,
+          }}
+        >
+          <form>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
-              label='Password Length'
-            />
-          </FormControl>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <CheckboxInput name='symbol' handleInput={handleCheckboxInput} />
-            <CheckboxInput name='number' handleInput={handleCheckboxInput} />
-            <CheckboxInput name='lowercase' handleInput={handleCheckboxInput} />
-            <CheckboxInput name='uppercase' handleInput={handleCheckboxInput} />
-          </Box>
-          <Button
-            type='submit'
-            onClick={handleSubmit}
-            sx={{ mt: 6 }}
-            disabled={activeButton}
-          >
-            {' '}
-            Generate Password{' '}
-          </Button>
-        </form>
+            >
+              <FormControl
+                sx={{ m: 1, backgroundColor: 'white' }}
+                variant='outlined'
+              >
+                <InputLabel htmlFor='outlined-adornment-password'>
+                  Random Password
+                </InputLabel>
+                <OutlinedInput
+                  id='outlined-adornment-password'
+                  type={showPassword ? 'text' : 'password'}
+                  value={newPassword}
+                  name='generatedPassword'
+                  endAdornment={
+                    <InputAdornment position='end'>
+                      <IconButton
+                        aria-label='toggle password visibility'
+                        onClick={handleShowPassword}
+                        edge='end'
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label='Password'
+                />
+              </FormControl>
+              <FormControl>
+                <TextField
+                  type='number'
+                  name='passwordLength'
+                  value={passwordLength}
+                  onChange={(e) => {
+                    setPasswordLength(Number(e.currentTarget.value));
+                  }}
+                  label='Password Length'
+                />
+              </FormControl>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                gap: 4,
+                flexWrap: 'wrap',
+              }}
+            >
+              <CheckboxInput name='symbol' handleInput={handleCheckboxInput} />
+              <CheckboxInput name='number' handleInput={handleCheckboxInput} />
+              <CheckboxInput
+                name='lowercase'
+                handleInput={handleCheckboxInput}
+              />
+              <CheckboxInput
+                name='uppercase'
+                handleInput={handleCheckboxInput}
+              />
+            </Box>
+            <Button
+              type='submit'
+              onClick={handleSubmit}
+              variant='contained'
+              sx={{ mt: 6 }}
+              disabled={inactiveButton}
+            >
+              {' '}
+              Generate Password{' '}
+            </Button>
+          </form>
+        </Grid2>
       </Box>
     </>
   );
