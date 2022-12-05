@@ -5,6 +5,7 @@ import PasswordGenerator from './components/PasswordGenerator';
 function App() {
   return (
     <div className='App'>
+      <h2>Password Generator</h2>
       <PasswordGenerator />
     </div>
   );
